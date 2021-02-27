@@ -11,7 +11,7 @@ function dragStart(e) {
 }
 
 function dragEnd() {
-    
+
 }
 
 uls.forEach((ul) => {
@@ -39,19 +39,36 @@ function drop(e) {
     this.appendChild(document.getElementById(sourceId))
 }
 
-console.dir(select);
+
+function check() {
+    this.classList.toggle("complete");
+    const text = this.parentNode.previousSibling.previousSibling;
+    const edit = this.nextSibling;
+    edit.classList.toggle("delete");
+    text.classList.toggle("strike");
+    text.classList.toggle("delete");
+}
+
 
 function onSubmit(e) {
     e.preventDefault();
     let value = input.value;
 
+    //新增list item以及icon
     const li = document.createElement("li");
-    li.innerHTML = `${value}`;
+    li.innerHTML = `
+            <span class="list-item">${value}</span>
+            <span class="icon-box">
+            <i class="far fa-check-circle" onclick="check.call(this)" ></i><i class="far fa-edit"></i>
+            </span>
+        `;
+
     li.setAttribute("id", value);
     li.setAttribute("draggable", true);
     li.addEventListener("dragstart", dragStart);
     li.addEventListener("dragend", dragEnd);
 
+    //依照選項新增至不同欄位
     if (select.value === "today") {
         todayList.append(li);
     } else if (select.value === "tomorrow") {
@@ -62,3 +79,5 @@ function onSubmit(e) {
 }
 
 form.addEventListener("submit", onSubmit);
+
+
