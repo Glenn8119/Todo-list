@@ -4,13 +4,71 @@ const todayList = document.querySelector(".ul__today");
 const tomorrowList = document.querySelector(".ul__tomorrow");
 const select = document.querySelector("select");
 const uls = document.querySelectorAll("ul");
+const trashCan = document.querySelector(".trash-can");
+
+addItem();
+
+// const collection = {
+//     textValue : textValue,
+//     textInv : textInv,
+//     textStr : textStr,
+//     textDe : textDe,
+//     textareaInv : textareaInv,
+//     checkCo : checkCo,
+//     editDe : editDe,
+//     day : day
+// }
+function addItem(){
+    const lis = JSON.parse(localStorage.getItem("lis"));    
+    if(lis){
+        lis.forEach((listItem)=>{
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <textarea class="textarea invisible ${listItem.textareaInv ? "invisible" : ""}" rows="1" >${listItem.textValue}</textarea>
+                <span class="text
+                ${listItem.textInv ? "invisible" : ""}
+                ${listItem.textStr ? "strike" : ""}
+                ${listItem.textDe ? "delete" : ""}
+                ">${listItem.textValue}</span>
+                <span class="icon-box">
+                <i class="far fa-check-circle ${listItem.checkCo ? "complete" : ""}" onclick="check.call(this)" ></i>
+                <i class="far fa-edit ${listItem.editDe ? "delete" : ""}" onclick="edit.call(this)"></i>
+                </span>
+            `;
+    
+            li.setAttribute("id", listItem.textValue);
+            li.setAttribute("draggable", true);
+            li.addEventListener("dragstart", dragStart);
+            li.addEventListener("dragend", dragEnd);
+            if(listItem.day){
+                todayList.append(li);
+            }else{
+                tomorrowList.append(li);
+            }
+        })    
+    }
+    
+}
+
+form.addEventListener("submit", onSubmit);
+
+trashCan.addEventListener("dragover", dragOver);
+trashCan.addEventListener("drop", dropTr);
+
+uls.forEach((ul) => {
+    ul.addEventListener("dragenter", dragEnter);
+    ul.addEventListener("dragleave", dragLeave);
+    ul.addEventListener("dragover", dragOver);
+    ul.addEventListener("drop", drop);
+})
 
 function dragStart(e) {
-
     const todayTexts = Array.from(uls[0].querySelectorAll(".text"));
     const tomorrowTexts = Array.from(uls[1].querySelectorAll(".text"));
     const statusToday = todayTexts.some((text) => text.classList.contains("invisible"));
     const statusTomorrow = tomorrowTexts.some((text) => text.classList.contains("invisible"));
+    //拖曳時儲存目標的ID;
+    //如果有任何一個item正在編輯中則無法拖曳
     if (!(statusToday || statusTomorrow)) {
         e.dataTransfer.setData("text / plain", e.target.id);
         setTimeout(() => {
@@ -19,26 +77,11 @@ function dragStart(e) {
     } else {
         alert("Please finish your edit before dragging!")
     }
-
-    // const status = ArrUls.every((ul)=>{
-    //     const ArrTexts = Array.from(ul.querySelectorAll(".text"));
-    //     return ul.querySelectorAll(".text").classList.contains("invisible");
-    // })
-    // console.log(status);
-    //拖曳時儲存目標的ID;
-
 }
 
 function dragEnd(e) {
     e.target.classList.remove("dragstart");
 }
-
-uls.forEach((ul) => {
-    ul.addEventListener("dragenter", dragEnter);
-    ul.addEventListener("dragleave", dragLeave);
-    ul.addEventListener("dragover", dragOver);
-    ul.addEventListener("drop", drop);
-})
 
 function dragEnter() {
     const todayTexts = Array.from(uls[0].querySelectorAll(".text"));
@@ -48,7 +91,6 @@ function dragEnter() {
     if (!(statusToday || statusTomorrow)) {
         this.classList.add("dragenter");
     }
-
 }
 
 function dragLeave() {
@@ -60,16 +102,11 @@ function dragOver(e) {
 }
 
 function drop(e) {
-    const todayTexts = Array.from(uls[0].querySelectorAll(".text"));
-    const tomorrowTexts = Array.from(uls[1].querySelectorAll(".text"));
-    const statusToday = todayTexts.some((text) => text.classList.contains("invisible"));
-    const statusTomorrow = tomorrowTexts.some((text) => text.classList.contains("invisible"));
-    //放下時用先前儲存的ID來新增節點
-    if (!(statusToday || statusTomorrow)) {
-        const sourceId = e.dataTransfer.getData("text / plain");
-        this.appendChild(document.getElementById(sourceId));
-        this.classList.remove("dragenter");
-    }
+    // 放下時用先前儲存的ID來新增節點
+    const sourceId = e.dataTransfer.getData("text / plain");
+    this.appendChild(document.getElementById(sourceId));
+    this.classList.remove("dragenter");
+    updateLS();
 }
 
 //按下打勾icon之後的效果,delete是變灰色,strike是加入畫線效果
@@ -99,7 +136,6 @@ function edit() {
     }
 }
 
-
 function onSubmit(e) {
     e.preventDefault();
     let value = input.value;
@@ -122,7 +158,6 @@ function onSubmit(e) {
         li.addEventListener("dragstart", dragStart);
         li.addEventListener("dragend", dragEnd);
 
-
         //依照選項新增至不同欄位
         if (select.value === "today") {
             todayList.append(li);
@@ -131,10 +166,49 @@ function onSubmit(e) {
         }
 
         input.value = "";
-    }else{
+        updateLS()
+    } else {
         alert("Don't leave it blank!")
     }
-
+    
+    updateLS()
 }
 
-form.addEventListener("submit", onSubmit);
+//拖曳到垃圾桶就刪除節點
+function dropTr(e) {
+    const sourceId = e.dataTransfer.getData("text / plain");
+    document.getElementById(sourceId).remove();
+    updateLS();
+}
+
+function updateLS(){
+    const lis = Array.from(document.querySelectorAll("li"));
+    const arr = [];
+
+    // console.log(liS[1].querySelector(".text").classList.contains("invisible"));
+
+    lis.forEach(li =>{
+        const textValue = li.querySelector(".text").innerHTML;
+        const textInv = li.querySelector(".text").classList.contains("invisible");
+        const textStr = li.querySelector(".text").classList.contains("strike");
+        const textDe = li.querySelector(".text").classList.contains("delete");
+        const textareaInv = li.querySelector(".textarea").classList.contains("invisible");
+        const checkCo = li.querySelector(".fa-check-circle").classList.contains("complete");
+        const editDe = li.querySelector(".fa-edit").classList.contains("delete");
+        const day = li.parentElement.classList.contains("ul__today");
+        const collection = {
+            textValue : textValue,
+            textInv : textInv,
+            textStr : textStr,
+            textDe : textDe,
+            textareaInv : textareaInv,
+            checkCo : checkCo,
+            editDe : editDe,
+            day : day
+        }
+        arr.push(collection);
+    })
+
+    localStorage.setItem("lis", JSON.stringify(arr));
+}
+

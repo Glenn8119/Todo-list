@@ -14,7 +14,8 @@
 </head>
 
 <body>
-    <h1 onclick="console.log('hi')">TODO LIST</h1>
+    <h1>TODO LIST</h1>
+    <p>Drag todos to move or remove</p>
     <form class="bar">
         <input type="text" placeholder="add some todos...">
         <select name="" id="">
@@ -28,12 +29,13 @@
             <h2>Let's get it done today!</h2>
             <ul class="ul__today"></ul>
         </div>
+        <button class="trash-can"><i class="far fa-trash-alt"></i></button>
         <div class="group group__tomorrow">
             <h2>Maybe tomorrow...</h2>
             <ul class="ul__tomorrow"></ul>
         </div>
     </main>
-    <button>Trash can</button>
+
     <script src="app.js"></script>
 </body>
 

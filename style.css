@@ -41,6 +41,10 @@ h1 {
   color: limegreen;
 }
 
+p{
+  font-size: 1.8rem;
+}
+
 input {
   padding: 0.5rem 1rem;
   font-size: 1.5rem;
@@ -69,7 +73,9 @@ select {
 .main-area {
   display: flex;
   justify-content: space-around;
+  align-items: flex-end;
   width: 80%;
+  margin-bottom:2rem;
 }
 
 h2 {
@@ -78,7 +84,7 @@ h2 {
 
 ul {
   border: 2px solid #e5e5e5;
-  height: 40rem;
+  height: 30rem;
   width: 30rem;
   padding: 0 2.5rem;
   background-color: white;
@@ -123,7 +129,7 @@ i:not(:last-child) {
 }
 
 .complete {
-  color: green;
+  color: rgb(255, 208, 0);
 }
 
 .strike {
@@ -164,4 +170,19 @@ i:not(:last-child) {
 
 .dragenter{
     border:2px dashed rgb(78, 75, 75);
+}
+
+.trash-can{
+  background-color: rgb(168, 167, 167);
+  border:none;
+  outline:none;
+  width:3.5rem;
+  height:3.5rem;
+  border-radius: 100px;
+  box-shadow: 0px 1px 5px rgba(0,0,0, 0.6);
+  cursor: pointer;
+}
+
+.trash-can .far{
+  font-size:2.5rem;
 }
