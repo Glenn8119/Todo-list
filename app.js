@@ -24,9 +24,8 @@ function addItem(){
         lis.forEach((listItem)=>{
             const li = document.createElement("li");
             li.innerHTML = `
-                <textarea class="textarea invisible ${listItem.textareaInv ? "invisible" : ""}" rows="1" >${listItem.textValue}</textarea>
+                <textarea class="textarea invisible" rows="1" >${listItem.textValue}</textarea>
                 <span class="text
-                ${listItem.textInv ? "invisible" : ""}
                 ${listItem.textStr ? "strike" : ""}
                 ${listItem.textDe ? "delete" : ""}
                 ">${listItem.textValue}</span>
@@ -114,11 +113,13 @@ function check() {
     const text = this.parentElement.previousElementSibling;
     const edit = this.nextElementSibling;
     const textarea = text.previousElementSibling;
+    //如果不是在編輯模式下的話才可以打勾
     if (textarea.classList.contains("invisible")) {
         this.classList.toggle("complete");
         edit.classList.toggle("delete");
         text.classList.toggle("strike");
         text.classList.toggle("delete");
+        updateLS();
     }
 }
 
@@ -189,19 +190,17 @@ function updateLS(){
 
     lis.forEach(li =>{
         const textValue = li.querySelector(".text").innerHTML;
-        const textInv = li.querySelector(".text").classList.contains("invisible");
+        
         const textStr = li.querySelector(".text").classList.contains("strike");
         const textDe = li.querySelector(".text").classList.contains("delete");
-        const textareaInv = li.querySelector(".textarea").classList.contains("invisible");
+        
         const checkCo = li.querySelector(".fa-check-circle").classList.contains("complete");
         const editDe = li.querySelector(".fa-edit").classList.contains("delete");
         const day = li.parentElement.classList.contains("ul__today");
         const collection = {
             textValue : textValue,
-            textInv : textInv,
             textStr : textStr,
             textDe : textDe,
-            textareaInv : textareaInv,
             checkCo : checkCo,
             editDe : editDe,
             day : day
